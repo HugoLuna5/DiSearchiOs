@@ -6,12 +6,17 @@
 //
 
 import Foundation
+import SwiftUI
 
 
 class PatientViewModel: ObservableObject {
     
     
-    
+    @Published var imagenPerfil:Image? = Image("profile")
+    @Published var isPhotoLibraryActive: Bool = false
+    @Published var downloadURL: String = ""
+    @Published var showProgressBar: Bool = false
+    @Published var status: String = ""
     
     @Published var patient: Patient?
     

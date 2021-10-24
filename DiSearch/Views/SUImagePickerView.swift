@@ -12,14 +12,13 @@ import FirebaseStorage
 struct SUImagePickerView: UIViewControllerRepresentable {
     
     var sourceType: UIImagePickerController.SourceType = .photoLibrary
-    @Binding var image: Image?
     @Binding var isPresented: Bool
     @Binding var downloadUrl: String
     @Binding var showProgressBar: Bool
     @Binding var status: String
     
     func makeCoordinator() -> ImagePickerViewCoordinator {
-        return ImagePickerViewCoordinator(image: $image, isPresented: $isPresented, downloadUrl: $downloadUrl, showProgressBar: $showProgressBar, status: $status)
+        return ImagePickerViewCoordinator(isPresented: $isPresented, downloadUrl: $downloadUrl, showProgressBar: $showProgressBar, status: $status)
     }
     
     func makeUIViewController(context: Context) -> UIImagePickerController {
@@ -28,24 +27,22 @@ struct SUImagePickerView: UIViewControllerRepresentable {
         pickerController.delegate = context.coordinator
         return pickerController
     }
-
+    
     func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {
         // Nothing to update here
     }
-
+    
 }
 
 class ImagePickerViewCoordinator: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
     
-    @Binding var image: Image?
     @Binding var isPresented: Bool
     @Binding var downloadUrl: String
     @Binding var showProgressBar: Bool
     @Binding var status: String
     
-    init(image: Binding<Image?>, isPresented: Binding<Bool>, downloadUrl: Binding<String>, showProgressBar: Binding<Bool>, status: Binding<String>) {
+    init(isPresented: Binding<Bool>, downloadUrl: Binding<String>, showProgressBar: Binding<Bool>, status: Binding<String>) {
         
-        self._image = image
         self._isPresented = isPresented
         self._downloadUrl = downloadUrl
         self._showProgressBar = showProgressBar
@@ -56,7 +53,6 @@ class ImagePickerViewCoordinator: NSObject, UINavigationControllerDelegate, UIIm
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         
         if let UiImage = info[UIImagePickerController.InfoKey.originalImage] as? UIImage {
-            self.image = Image(uiImage: UiImage)
             
             
             if let data = UiImage.pngData() {
@@ -66,26 +62,26 @@ class ImagePickerViewCoordinator: NSObject, UINavigationControllerDelegate, UIIm
                 
                 let metadata = StorageMetadata()
                 metadata.contentType = "image/png"
-        
+                
                 let randomName: String = randomString(of: 10)
                 let imagesRef = storageRef.child("uploads/\(randomName).png")
-                
-                
                 let uploadTask = imagesRef.putData(data, metadata: metadata)
                 
                 
                 
                 
                 uploadTask.observe(.success) { snapshot in
-                    
-                    
+                    print("GG")
+                    print(snapshot)
                     imagesRef.downloadURL { (url, error) in
+                        print("Hello")
                         
+                        print(error)
                         guard url != nil else {
-                              // Uh-oh, an error occurred!
-                                self.showProgressBar = false
-                                self.status = "Error"
-                              return
+                            // Uh-oh, an error occurred!
+                            self.showProgressBar = false
+                            self.status = "Error"
+                            return
                         }
                         
                         self.showProgressBar = false
@@ -105,8 +101,8 @@ class ImagePickerViewCoordinator: NSObject, UINavigationControllerDelegate, UIIm
                     self.status = "Error"
                     
                 }
-           
-            
+                
+                
             }
             
             

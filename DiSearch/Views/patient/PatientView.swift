@@ -32,7 +32,7 @@ struct PatientView: View {
                             Text(patientViewModel.name)
                                 .font(.caption)
                                 .foregroundColor(.gray)
-                        
+                            
                             Divider()
                                 .frame(height: 1)
                                 .background(Color(.gray))
@@ -153,12 +153,12 @@ struct PatientView: View {
                             Text("Gender")
                                 .font(.subheadline)
                                 .foregroundColor(.gray)
-
+                            
                             Text(patientViewModel.sex)
                                 .font(.caption)
                                 .foregroundColor(.gray)
-                           
-                        
+                            
+                            
                             Divider()
                                 .frame(height: 1)
                                 .background(Color(.gray))
@@ -172,7 +172,11 @@ struct PatientView: View {
                     
                 }
                 .padding(.horizontal, 35)
-                
+                .sheet(isPresented: $patientViewModel.isPhotoLibraryActive, content: {
+                    
+                    SUImagePickerView(sourceType: .photoLibrary, isPresented: $patientViewModel.isPhotoLibraryActive, downloadUrl: self.$patientViewModel.downloadURL, showProgressBar: self.$patientViewModel.showProgressBar, status: self.$patientViewModel.status)
+                    
+                })
             }
             
             VStack {
@@ -181,7 +185,10 @@ struct PatientView: View {
                     Spacer()
                     Menu {
                         
-                        Button("Covid 2019", action: {})
+                        Button("Covid 2019", action: {
+                            patientViewModel.isPhotoLibraryActive = true
+                            patientViewModel.showProgressBar = true
+                        })
                         Button("Melanoma", action: {})
                     } label: {
                         Text("+")
@@ -196,9 +203,10 @@ struct PatientView: View {
                                 radius: 3,
                                 x: 3,
                                 y: 3)
-
-                  
-                        
+                       
+                    
+                    
+                    
                 }
                 
             }
